@@ -1,4 +1,18 @@
-# 🚀 metro-requirex
+<picture>
+  <img alt="Metro RequireX Banner" src="./.github/assets/banner.png">
+</picture>
+
+<br/>
+<br/>
+
+<div align="center">
+<a href="https://www.npmjs.com/package/@crherman7/metro-requirex"><img src="https://img.shields.io/npm/v/metro-requirex.svg?style=flat" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/@crherman7/metro-requirex"><img src="https://img.shields.io/npm/dm/metro-requirex.svg?style=flat" alt="Downloads"></a>
+<a href="https://bundlephobia.com/package/@crherman7/metro-requirex"><img src="https://img.shields.io/bundlephobia/minzip/metro-requirex" alt="Bundle Size"></a>
+<a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-blue.svg" alt="TypeScript"></a>
+<a href="LICENSE.md"><img src="https://img.shields.io/github/license/crherman7/metro-requirex.svg" alt="License"></a>
+<a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+</div>
 
 > **Dynamically require and execute modules at runtime in React Native (Metro Bundler).**
 
