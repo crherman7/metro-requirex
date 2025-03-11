@@ -22,13 +22,11 @@
 
 ## **✨ Features**
 
-✅ **Dynamic Requires** – Load Metro-bundled modules at runtime.  
-✅ **Eval Support** – Execute JavaScript snippets with built-in `requirex()`.  
-✅ **Works with React Components** – Load and render dynamic React Native components.  
-✅ **No Metro Modifications** – Uses `require.resolveWeak()` and Metro's internal loader.  
+✅ **Dynamic Requires** – Load Metro-bundled modules at runtime.
+✅ **Eval Support** – Execute JavaScript snippets with built-in `requirex()`.
+✅ **Works with React Components** – Load and render dynamic React Native components.
+✅ **No Metro Modifications** – Uses `require.resolveWeak()` and Metro's internal loader.
 ✅ **Safe & Performant** – Isolated execution with `new Function()`.
-
----
 
 ## **📦 Installation**
 
@@ -42,8 +40,6 @@ or
 npm install metro-requirex
 ```
 
----
-
 ## **🚀 Usage**
 
 ### **1️⃣ Dynamic Module Loading**
@@ -56,8 +52,6 @@ import { requirex } from 'metro-requirex';
 const lodash = requirex('lodash');
 console.log(lodash.camelCase('hello world')); // "helloWorld"
 ```
-
----
 
 ### **2️⃣ Executing Dynamic Code**
 
@@ -73,8 +67,6 @@ const code = `
 
 console.log(evalx(code)); // "react-native-rocks"
 ```
-
----
 
 ### **3️⃣ Dynamically Evaluating a React Component**
 
@@ -101,8 +93,6 @@ export default function App() {
 }
 ```
 
----
-
 ## **📌 API Reference**
 
 ### **🔹 `requirex(moduleName: string): any`**
@@ -125,8 +115,6 @@ const moment = requirex('moment');
 console.log(moment().format('YYYY-MM-DD'));
 ```
 
----
-
 ### **🔹 `evalx(code: string): any`**
 >
 > Executes JavaScript dynamically, supporting module imports.
@@ -148,27 +136,21 @@ const result = evalx(`
 console.log(result); // "Dynamic Execution!"
 ```
 
----
-
 ## **🛠 How It Works**
 
 ### 🔹 **How `requirex()` Works**
 
-Metro Bundler assigns **opaque numeric IDs** to modules at build time, meaning `require('module')` doesn’t work dynamically.  
+Metro Bundler assigns **opaque numeric IDs** to modules at build time, meaning `require('module')` doesn’t work dynamically.
 Instead, `requirex()`:
 
 1. Calls **`require.resolveWeak(moduleName)`** to retrieve Metro’s internal module ID.
 2. Calls **Metro’s internal `__r(moduleId)`** to fetch the module dynamically.
-
----
 
 ### 🔹 **How `evalx()` Works**
 
 1. Uses **`new Function()`** to create a sandboxed execution scope.
 2. Injects **`requirex()`** so that evaluated code can import modules dynamically.
 3. Returns **`module.exports`**, mimicking a CommonJS module system.
-
----
 
 ## **🧪 Testing**
 
@@ -178,19 +160,17 @@ Run the test suite to verify functionality:
 yarn test
 ```
 
----
-
 ## **📦 Contributing**
 
 Contributions are welcome! To get started:
 
-1. Clone the repo:  
+1. Clone the repo:
 
    ```sh
    git clone https://github.com/crherman7/metro-requirex.git
    ```
 
-2. Install dependencies:  
+2. Install dependencies:
 
    ```sh
    yarn install
@@ -198,17 +178,12 @@ Contributions are welcome! To get started:
 
 3. Make your changes and submit a pull request.
 
----
-
 ## **📜 License**
 
 Licensed under the **MIT License**.
-
----
 
 ## **🌟 Why Use `metro-requirex`?**
 
 If you need **dynamic module loading** or **evaluating JavaScript dynamically in React Native**, `metro-requirex` makes it **fast, safe, and easy**—without needing Metro modifications.
 
----
 🚀 **Ready to supercharge your React Native app?** Install `metro-requirex` today! 🎉
