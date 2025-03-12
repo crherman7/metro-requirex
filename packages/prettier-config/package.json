@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "prettier": "^3.5.3"
+  },
   "publishConfig": {
     "access": "public"
   }

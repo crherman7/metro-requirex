@@ -48,7 +48,7 @@ export const requirex = (moduleName: string): unknown => {
   try {
     const moduleId = (require as MetroRequire).resolveWeak(moduleName);
 
-    if (typeof moduleId === "number" && global.__r) {
+    if (typeof moduleId === 'number' && global.__r) {
       return global.__r(moduleId);
     }
 
@@ -78,9 +78,9 @@ export const requirex = (moduleName: string): unknown => {
  */
 export const evalx = <T = unknown>(code: string): T => {
   return new Function(
-    "require",
-    "module",
-    "exports",
+    'require',
+    'module',
+    'exports',
     `"use strict";\n${code}\n return module.exports;`,
   )(requirex, {}, {}) as T;
 };
