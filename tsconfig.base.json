@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@crherman7/metro-requirex": ["libs/metro-requirex/src/index.ts"],
       "metro-requirex": ["libs/metro-requirex/src/index.ts"]
     }
   },

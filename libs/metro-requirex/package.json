@@ -1,11 +1,15 @@
 {
-  "name": "metro-requirex",
+  "name": "@crherman7/metro-requirex",
   "version": "0.0.1",
-  "private": true,
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
     "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-native": ">=0.72.0",
+    "metro": ">=0.72.0"
   }
 }
