@@ -79,8 +79,9 @@ export const requirex = (moduleName: string): unknown => {
 export const evalx = <T = unknown>(code: string): T => {
   return new Function(
     'require',
+    'global',
     'module',
     'exports',
     `"use strict";\n${code}\n return module.exports;`,
-  )(requirex, {}, {}) as T;
+  )(requirex, global, {}, {}) as T;
 };
