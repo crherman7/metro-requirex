@@ -33,5 +33,12 @@
     "verdaccio": "^6.0.5"
   },
   "nx": {},
-  "dependencies": {}
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "core-js"
+    ],
+    "onlyBuiltDependencies": [
+      "core-js"
+    ]
+  }
 }
