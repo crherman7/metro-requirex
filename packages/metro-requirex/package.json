@@ -1,15 +1,12 @@
 {
   "name": "@crherman7/metro-requirex",
   "version": "0.0.0",
-  "scripts": {
-    "build": "tsc --noEmit false --outDir dist"
-  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.13.10",
-    "typescript": "5.8.2"
+    "typescript": "^5.8.2"
   },
   "peerDependencies": {
     "metro": ">=0.72.0",
@@ -18,5 +15,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build": "tsc --noEmit false --outDir dist"
   }
 }
