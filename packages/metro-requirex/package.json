@@ -8,6 +8,7 @@
     "@types/node": "^22.13.10",
     "typescript": "^5.8.2"
   },
+  "main": "dist/index.js",
   "peerDependencies": {
     "metro": ">=0.72.0",
     "react": ">=17.0.0",
@@ -18,5 +19,6 @@
   },
   "scripts": {
     "build": "tsc --noEmit false --outDir dist"
-  }
+  },
+  "types": "dist/index.d.ts"
 }
