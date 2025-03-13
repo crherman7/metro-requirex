@@ -47,7 +47,7 @@ npm install metro-requirex
 Use `requirex()` to dynamically load Metro-bundled modules.
 
 ```js
-import { requirex } from 'metro-requirex';
+import {requirex} from 'metro-requirex';
 
 const lodash = requirex('lodash');
 console.log(lodash.camelCase('hello world')); // "helloWorld"
@@ -58,7 +58,7 @@ console.log(lodash.camelCase('hello world')); // "helloWorld"
 Use `evalx()` to **execute JavaScript dynamically**, supporting module imports.
 
 ```js
-import { evalx } from 'metro-requirex';
+import {evalx} from 'metro-requirex';
 
 const code = `
   const _ = require("lodash");
@@ -73,8 +73,8 @@ console.log(evalx(code)); // "react-native-rocks"
 Since JSX is **already transformed**, you can evaluate and render React Native components dynamically.
 
 ```js
-import { evalx } from 'metro-requirex';
-import { View, Text } from 'react-native';
+import {evalx} from 'metro-requirex';
+import {View, Text} from 'react-native';
 
 const componentCode = `
   module.exports = () => {
@@ -96,7 +96,7 @@ export default function App() {
 ## **📌 API Reference**
 
 ### **🔹 `requirex(moduleName: string): any`**
->
+
 > Dynamically loads a module in Metro.
 
 #### **Parameters**
@@ -116,7 +116,7 @@ console.log(moment().format('YYYY-MM-DD'));
 ```
 
 ### **🔹 `evalx(code: string): any`**
->
+
 > Executes JavaScript dynamically, supporting module imports.
 
 #### **Parameters**
