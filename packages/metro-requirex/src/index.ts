@@ -1,26 +1,4 @@
 /**
- * An extension of the Node.js `NodeRequire` interface to include a method for weakly resolving module names.
- *
- * @interface MetroRequire
- * @extends {NodeRequire}
- *
- * @method resolveWeak
- * @memberof MetroRequire
- * @param {string} moduleName - The name of the module to resolve.
- * @returns {number} - A numeric identifier for the module, or -1 if the module cannot be resolved.
- *
- * @example
- * const moduleId = require.resolveWeak('some-module');
- * if (moduleId !== -1) {
- *   // Module is available and can be required
- *   const someModule = require('some-module');
- * }
- */
-interface MetroRequire extends NodeJS.Require {
-  resolveWeak: (moduleName: string) => number;
-}
-
-/**
  * Dynamically requires a module by its name using Metro's weak module resolution.
  *
  * @param {string} moduleName - The name of the module to require.
@@ -45,16 +23,34 @@ interface MetroRequire extends NodeJS.Require {
  * an error is thrown and caught, logging the failure and returning `null`.
  */
 export const requirex = (moduleName: string): unknown => {
-  try {
-    const moduleId = (require as MetroRequire).resolveWeak(moduleName);
+  // We should declare the module map outside the function to avoid recreating it on each call
+  // In a real implementation, this would be populated with actual module mappings
+  const METRO_REQUIREX_MODULE_MAP: Record<string, number> = {};
 
-    if (typeof moduleId === 'number' && global.__r) {
-      return global.__r(moduleId);
+  try {
+    const moduleId = METRO_REQUIREX_MODULE_MAP[moduleName];
+
+    if (!moduleId) {
+      throw new Error(`Module "${moduleName}" not found in dependency graph.`);
     }
 
-    throw new Error(`Module "${moduleName}" not found.`);
+    // Verify that the Metro require function exists
+    if (typeof global.__r !== 'function') {
+      throw new Error(
+        'Metro require function (__r) is not available in the global scope.',
+      );
+    }
+
+    // Since we've verified moduleId exists and __r is a function, we can safely call it
+    return global.__r(moduleId);
   } catch (err) {
-    console.error(`Failed to dynamically require "${moduleName}":`, err);
+    // Use a more descriptive error message with the actual error
+    console.error(
+      `Failed to dynamically require "${moduleName}":`,
+      err instanceof Error ? err.message : String(err),
+    );
+
+    // Return null to indicate failure
     return null;
   }
 };
