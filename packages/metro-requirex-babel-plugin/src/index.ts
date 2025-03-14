@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import * as t from '@babel/types';
 import type {NodePath} from '@babel/traverse';
 import type * as Babel from '@babel/core';
+
 /**
  * A Babel plugin that automatically populates the METRO_REQUIREX_MODULE_MAP with
  * module IDs from package.json dependencies.
