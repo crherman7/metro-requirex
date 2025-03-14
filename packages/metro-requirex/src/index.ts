@@ -22,7 +22,7 @@
  * it will use `__r` to require the module. If the module cannot be found,
  * an error is thrown and caught, logging the failure and returning `null`.
  */
-export const requirex = (moduleName: string): unknown => {
+export function requirex(moduleName: string): unknown {
   // We should declare the module map outside the function to avoid recreating it on each call
   // In a real implementation, this would be populated with actual module mappings
   const METRO_REQUIREX_MODULE_MAP: Record<string, number> = {};
@@ -53,7 +53,7 @@ export const requirex = (moduleName: string): unknown => {
     // Return null to indicate failure
     return null;
   }
-};
+}
 
 /**
  * Evaluates a string of JavaScript code in a strict mode context and returns the result.
@@ -72,7 +72,7 @@ export const requirex = (moduleName: string): unknown => {
  * console.log(result); // 42
  * ```
  */
-export const evalx = <T = unknown>(code: string): T => {
+export function evalx<T = unknown>(code: string): T {
   return new Function(
     'require',
     'global',
@@ -80,4 +80,4 @@ export const evalx = <T = unknown>(code: string): T => {
     'exports',
     `"use strict";\n${code}\n return module.exports;`,
   )(requirex, global, {}, {}) as T;
-};
+}
