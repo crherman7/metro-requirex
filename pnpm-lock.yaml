@@ -77,6 +77,9 @@ importers:
       react-native:
         specifier: '>=0.72.0'
         version: 0.78.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.0.0)
+      spark-md5:
+        specifier: ^3.0.2
+        version: 3.0.2
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -90,24 +93,28 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.10
+      '@types/spark-md5':
+        specifier: ^3.0.5
+        version: 3.0.5
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
 
-  packages/metro-requirex-babel-plugin:
+  packages/metro-requirex-metro-config:
+    dependencies:
+      metro:
+        specifier: '>=0.72.0'
+        version: 0.82.0
+      react:
+        specifier: '>=17.0.0'
+        version: 19.0.0
+      react-native:
+        specifier: '>=0.72.0'
+        version: 0.78.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.0.0)
+      spark-md5:
+        specifier: ^3.0.2
+        version: 3.0.2
     devDependencies:
-      '@babel/core':
-        specifier: ^7.26.10
-        version: 7.26.10
-      '@babel/helper-plugin-utils':
-        specifier: ^7.26.5
-        version: 7.26.5
-      '@babel/traverse':
-        specifier: ^7.26.10
-        version: 7.26.10
-      '@babel/types':
-        specifier: ^7.26.10
-        version: 7.26.10
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -117,15 +124,43 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/babel__core':
-        specifier: ^7.20.5
-        version: 7.20.5
-      '@types/babel__traverse':
-        specifier: ^7.20.6
-        version: 7.20.6
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.10
+      '@types/spark-md5':
+        specifier: ^3.0.5
+        version: 3.0.5
+      typescript:
+        specifier: ^5.8.2
+        version: 5.8.2
+
+  packages/metro-requirex-utils:
+    dependencies:
+      metro:
+        specifier: '>=0.72.0'
+        version: 0.82.0
+      react:
+        specifier: '>=17.0.0'
+        version: 19.0.0
+      react-native:
+        specifier: '>=0.72.0'
+        version: 0.78.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.0.0)
+      spark-md5:
+        specifier: ^3.0.2
+        version: 3.0.2
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/prettier-config':
+        specifier: workspace:*
+        version: link:../prettier-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/spark-md5':
+        specifier: ^3.0.5
+        version: 3.0.5
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
@@ -1113,6 +1148,9 @@ packages:
 
   '@types/node@22.13.10':
     resolution: {integrity: sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==}
+
+  '@types/spark-md5@3.0.5':
+    resolution: {integrity: sha512-lWf05dnD42DLVKQJZrDHtWFidcLrHuip01CtnC2/S6AMhX4t9ZlEUj4iuRlAnts0PQk7KESOqKxeGE/b6sIPGg==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -2998,6 +3036,9 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
+  spark-md5@3.0.2:
+    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
+
   spawndamnit@3.0.1:
     resolution: {integrity: sha512-MmnduQUuHCoFckZoWnXsTg7JaiLBJrKFj9UI2MbRPGaJeVpsLcVBu6P/IGZovziM/YBsellCmsprgNA+w0CzVg==}
 
@@ -4709,6 +4750,8 @@ snapshots:
   '@types/node@22.13.10':
     dependencies:
       undici-types: 6.20.0
+
+  '@types/spark-md5@3.0.5': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -7094,6 +7137,8 @@ snapshots:
   source-map@0.5.7: {}
 
   source-map@0.6.1: {}
+
+  spark-md5@3.0.2: {}
 
   spawndamnit@3.0.1:
     dependencies:

@@ -1,3 +1,26 @@
+import SparkMD5 from 'spark-md5';
+
+/**
+ * Converts a string to a deterministic numeric ID using MD5 hashing
+ *
+ * This function is a crucial part of the module resolution system. It generates
+ * a deterministic numeric ID from a module name that can be used with Metro's
+ * module system. The same function is used in metro-requirex-metro-config to ensure
+ * that module IDs calculated during bundling match the IDs used at runtime when
+ * requiring modules dynamically.
+ *
+ * In metro-requirex-metro-config, this hash function is integrated into Metro's
+ * serializer to override the default module ID generation, ensuring consistent
+ * IDs between build time and runtime for dynamic requires.
+ *
+ * @param input - String to hash (typically a module name or path)
+ * @returns Numeric representation of the first 8 hex characters of the MD5 hash
+ */
+function hashToNumericId(input: string): number {
+  const hex = SparkMD5.hash(input).slice(0, 8);
+  return Number.parseInt(hex, 16);
+}
+
 /**
  * Dynamically requires a module by its name using Metro's weak module resolution.
  *
@@ -23,12 +46,8 @@
  * an error is thrown and caught, logging the failure and returning `null`.
  */
 export function requirex(moduleName: string): unknown {
-  // We should declare the module map outside the function to avoid recreating it on each call
-  // In a real implementation, this would be populated with actual module mappings
-  const METRO_REQUIREX_MODULE_MAP: Record<string, number> = {};
-
   try {
-    const moduleId = METRO_REQUIREX_MODULE_MAP[moduleName];
+    const moduleId = hashToNumericId(moduleName);
 
     if (!moduleId) {
       throw new Error(`Module "${moduleName}" not found in dependency graph.`);

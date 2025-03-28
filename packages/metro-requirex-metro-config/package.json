@@ -1,20 +1,23 @@
 {
-  "name": "@crherman7/metro-requirex-babel-plugin",
+  "name": "@crherman7/metro-requirex-metro-config",
   "version": "0.2.1",
+  "dependencies": {
+    "spark-md5": "^3.0.2"
+  },
   "devDependencies": {
-    "@babel/core": "^7.26.10",
-    "@babel/helper-plugin-utils": "^7.26.5",
-    "@babel/traverse": "^7.26.10",
-    "@babel/types": "^7.26.10",
     "@repo/eslint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/babel__core": "^7.20.5",
-    "@types/babel__traverse": "^7.20.6",
     "@types/node": "^22.13.10",
+    "@types/spark-md5": "^3.0.5",
     "typescript": "^5.8.2"
   },
   "main": "dist/index.js",
+  "peerDependencies": {
+    "metro": ">=0.72.0",
+    "react": ">=17.0.0",
+    "react-native": ">=0.72.0"
+  },
   "publishConfig": {
     "access": "public"
   },
