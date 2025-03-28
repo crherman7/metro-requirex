@@ -1,1 +1,1 @@
-# `@crherman7/metro-requirex-metro-config`
+# `@metro-requirex/metro-config`

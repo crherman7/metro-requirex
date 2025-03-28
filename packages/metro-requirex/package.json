@@ -1,5 +1,5 @@
 {
-  "name": "@crherman7/metro-requirex",
+  "name": "@metro-requirex/react-native",
   "version": "0.2.1",
   "dependencies": {
     "spark-md5": "^3.0.2"

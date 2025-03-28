@@ -1,1 +1,1 @@
-# `@crherman7/metro-requirex`
+# `@metro-requirex/react-native`

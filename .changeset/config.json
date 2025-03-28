@@ -3,7 +3,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": true,
   "fixed": [],
-  "linked": [["@crherman7/*"]],
+  "linked": [["@metro-requirex/*"]],
   "access": "public",
   "baseBranch": "develop",
   "updateInternalDependencies": "patch",
