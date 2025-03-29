@@ -66,7 +66,7 @@ importers:
         specifier: ^8.26.0
         version: 8.26.0(eslint@9.22.0)(typescript@5.8.2)
 
-  packages/metro-requirex:
+  packages/metro-config:
     dependencies:
       metro:
         specifier: '>=0.72.0'
@@ -93,71 +93,6 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.10
-      '@types/spark-md5':
-        specifier: ^3.0.5
-        version: 3.0.5
-      typescript:
-        specifier: ^5.8.2
-        version: 5.8.2
-
-  packages/metro-requirex-metro-config:
-    dependencies:
-      metro:
-        specifier: '>=0.72.0'
-        version: 0.82.0
-      react:
-        specifier: '>=17.0.0'
-        version: 19.0.0
-      react-native:
-        specifier: '>=0.72.0'
-        version: 0.78.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.0.0)
-      spark-md5:
-        specifier: ^3.0.2
-        version: 3.0.2
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@repo/prettier-config':
-        specifier: workspace:*
-        version: link:../prettier-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/node':
-        specifier: ^22.13.10
-        version: 22.13.10
-      '@types/spark-md5':
-        specifier: ^3.0.5
-        version: 3.0.5
-      typescript:
-        specifier: ^5.8.2
-        version: 5.8.2
-
-  packages/metro-requirex-utils:
-    dependencies:
-      metro:
-        specifier: '>=0.72.0'
-        version: 0.82.0
-      react:
-        specifier: '>=17.0.0'
-        version: 19.0.0
-      react-native:
-        specifier: '>=0.72.0'
-        version: 0.78.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.0.0)
-      spark-md5:
-        specifier: ^3.0.2
-        version: 3.0.2
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@repo/prettier-config':
-        specifier: workspace:*
-        version: link:../prettier-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/spark-md5':
         specifier: ^3.0.5
         version: 3.0.5
@@ -170,6 +105,40 @@ importers:
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
+
+  packages/react-native:
+    dependencies:
+      metro:
+        specifier: '>=0.72.0'
+        version: 0.82.0
+      react:
+        specifier: '>=17.0.0'
+        version: 19.0.0
+      react-native:
+        specifier: '>=0.72.0'
+        version: 0.78.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.0.0)
+      spark-md5:
+        specifier: ^3.0.2
+        version: 3.0.2
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/prettier-config':
+        specifier: workspace:*
+        version: link:../prettier-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.13.10
+        version: 22.13.10
+      '@types/spark-md5':
+        specifier: ^3.0.5
+        version: 3.0.5
+      typescript:
+        specifier: ^5.8.2
+        version: 5.8.2
 
   packages/typescript-config: {}
 
