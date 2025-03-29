@@ -14,21 +14,42 @@
 <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 </div>
 
-> **Dynamically require and execute modules at runtime in React Native (Metro Bundler).**
+> **Dynamic Module Loading and Runtime Execution for React Native using Metro**
 
-`metro-requirex` enables **dynamic module resolution and execution** in React Native using Metro Bundler. It provides a **safe, efficient, and Metro-compatible** way to dynamically `require()` modules and evaluate JavaScript code at runtime.
+`metro-requirex` is a utility for **dynamically loading modules** and **executing JavaScript code** in a React Native environment, leveraging Metro Bundler. With `metro-requirex`, developers can bypass traditional static `require()` statements, allowing for **runtime module resolution** and **dynamic code execution**.
 
----
+## **Table of Contents**
 
-## **✨ Features**
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Dynamic Module Loading](#dynamic-module-loading)
+  - [Executing Dynamic Code](#executing-dynamic-code)
+  - [Dynamically Evaluating React Components](#dynamically-evaluating-react-components)
+- [API Reference](#api-reference)
+  - [`requirex`](#requirex)
+  - [`evalx`](#evalx)
+- [How It Works](#how-it-works)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
-✅ **Dynamic Requires** – Load Metro-bundled modules at runtime.<br>
-✅ **Eval Support** – Execute JavaScript snippets with built-in `requirex()`. <br>
-✅ **Works with React Components** – Load and render dynamic React Native components.<br>
-✅ **No Metro Modifications** – Uses `require.resolveWeak()` and Metro's internal loader.<br>
-✅ **Safe & Performant** – Isolated execution with `new Function()`.
+## **Overview**
 
-## **📦 Installation**
+`metro-requirex` allows for dynamic module loading and evaluation in React Native without modifying Metro itself. It ensures **consistent** and **efficient** resolution of modules at runtime, providing a seamless experience for developers who need **runtime flexibility** within their applications.
+
+## **Features**
+
+- **Dynamic Module Resolution**: Load and execute modules dynamically at runtime, even for modules that are bundled with Metro.
+- **Eval Support**: Execute JavaScript dynamically using `evalx()` with support for module imports and exports.
+- **React Component Support**: Dynamically load and render React Native components at runtime without needing to rebuild.
+- **Zero Metro Modifications**: Utilizes Metro’s internal module resolution and `__r()` function for compatibility.
+- **Safe Execution**: Uses `new Function()` for sandboxed execution, ensuring performance is not impacted.
+
+## **Installation**
+
+Install `metro-requirex` via npm or yarn:
 
 ```sh
 yarn add metro-requirex
@@ -40,22 +61,22 @@ or
 npm install metro-requirex
 ```
 
-## **🚀 Usage**
+## **Usage**
 
-### **1️⃣ Dynamic Module Loading**
+### **Dynamic Module Loading**
 
-Use `requirex()` to dynamically load Metro-bundled modules.
+You can load Metro-bundled modules dynamically using the `requirex()` function:
 
 ```js
 import {requirex} from 'metro-requirex';
 
 const lodash = requirex('lodash');
-console.log(lodash.camelCase('hello world')); // "helloWorld"
+console.log(lodash.camelCase('hello world')); // Output: "helloWorld"
 ```
 
-### **2️⃣ Executing Dynamic Code**
+### **Executing Dynamic Code**
 
-Use `evalx()` to **execute JavaScript dynamically**, supporting module imports.
+Execute arbitrary JavaScript code dynamically with module imports using `evalx()`:
 
 ```js
 import {evalx} from 'metro-requirex';
@@ -65,12 +86,12 @@ const code = `
   module.exports = _.kebabCase("React Native Rocks!");
 `;
 
-console.log(evalx(code)); // "react-native-rocks"
+console.log(evalx(code)); // Output: "react-native-rocks"
 ```
 
-### **3️⃣ Dynamically Evaluating a React Component**
+### **Dynamically Evaluating React Components**
 
-Since JSX is **already transformed**, you can evaluate and render React Native components dynamically.
+You can dynamically create and render React Native components at runtime:
 
 ```js
 import {evalx} from 'metro-requirex';
@@ -93,20 +114,20 @@ export default function App() {
 }
 ```
 
-## **📌 API Reference**
+## **API Reference**
 
-### **🔹 `requirex(moduleName: string): any`**
+### **`requirex(moduleName: string): any`**
 
-> Dynamically loads a module in Metro.
+Dynamically loads a module within Metro Bundler.
 
 #### **Parameters**
 
-- `moduleName` _(string)_: The name of the module to require.
+- `moduleName` _(string)_: The name of the module to load.
 
 #### **Returns**
 
 - The module’s exports if found.
-- `null` if the module does not exist.
+- `null` if the module cannot be resolved.
 
 #### **Example**
 
@@ -115,9 +136,9 @@ const moment = requirex('moment');
 console.log(moment().format('YYYY-MM-DD'));
 ```
 
-### **🔹 `evalx(code: string): any`**
+### **`evalx(code: string): any`**
 
-> Executes JavaScript dynamically, supporting module imports.
+Executes JavaScript code dynamically, supporting module imports.
 
 #### **Parameters**
 
@@ -125,7 +146,7 @@ console.log(moment().format('YYYY-MM-DD'));
 
 #### **Returns**
 
-- The value of `module.exports` in the executed code.
+- The value of `module.exports` from the executed code.
 
 #### **Example**
 
@@ -133,57 +154,50 @@ console.log(moment().format('YYYY-MM-DD'));
 const result = evalx(`
   module.exports = "Dynamic Execution!";
 `);
-console.log(result); // "Dynamic Execution!"
+console.log(result); // Output: "Dynamic Execution!"
 ```
 
-## **🛠 How It Works**
+## **How It Works**
 
-### 🔹 **How `requirex()` Works**
+### **Dynamic Module Resolution**
 
-Metro Bundler assigns **opaque numeric IDs** to modules at build time, meaning `require('module')` doesn’t work dynamically.
-Instead, `requirex()`:
+1. **MD5 Hashing for Module ID**: We generate deterministic numeric IDs for modules using **MD5 hashing** of the module path. This ensures that modules always receive the same ID across builds and executions.
 
-1. Calls **`require.resolveWeak(moduleName)`** to retrieve Metro’s internal module ID.
-2. Calls **Metro’s internal `__r(moduleId)`** to fetch the module dynamically.
+2. **External Modules**: For modules in `node_modules`, we compute a hash of the module's relative path within `node_modules` to resolve it dynamically.
 
-### 🔹 **How `evalx()` Works**
+3. **Internal Modules**: For internal project files, we compute the relative path from the project root and map it to a unique ID to ensure consistent resolution across different builds.
 
-1. Uses **`new Function()`** to create a sandboxed execution scope.
-2. Injects **`requirex()`** so that evaluated code can import modules dynamically.
-3. Returns **`module.exports`**, mimicking a CommonJS module system.
+4. **Module Resolution at Runtime**: Once the correct module ID is computed, we use **Metro’s internal `__r()` function** to dynamically load the module during runtime.
 
-## **🧪 Testing**
+### **Dynamic Code Execution with `evalx()`**
 
-Run the test suite to verify functionality:
+1. **Sandboxed Execution**: The `evalx()` function uses **`new Function()`** to execute JavaScript code in a secure, isolated environment.
+
+2. **Module Imports**: The evaluated code has access to `requirex()`, allowing it to dynamically import modules.
+
+3. **Return Value**: The function returns `module.exports` from the executed code, mimicking the CommonJS module system.
+
+## **Testing**
+
+To ensure everything works as expected, you can run the tests:
 
 ```sh
 yarn test
 ```
 
-## **📦 Contributing**
+## **Contributing**
 
-Contributions are welcome! To get started:
+We welcome contributions to `metro-requirex`! If you’d like to contribute, please follow the steps below:
 
-1. Clone the repo:
+1. Fork the repository on GitHub.
+2. Clone your forked repository to your local machine.
+3. Create a new branch for your feature or bug fix.
+4. Make your changes and commit them with descriptive messages.
+5. Push your changes to your forked repository.
+6. Open a pull request to the main repository.
 
-   ```sh
-   git clone https://github.com/crherman7/metro-requirex.git
-   ```
+For more detailed contributing instructions, check out the [Contributing Guide](CONTRIBUTING.md).
 
-2. Install dependencies:
+## **License**
 
-   ```sh
-   yarn install
-   ```
-
-3. Make your changes and submit a pull request.
-
-## **📜 License**
-
-Licensed under the **MIT License**.
-
-## **🌟 Why Use `metro-requirex`?**
-
-If you need **dynamic module loading** or **evaluating JavaScript dynamically in React Native**, `metro-requirex` makes it **fast, safe, and easy**—without needing Metro modifications.
-
-🚀 **Ready to supercharge your React Native app?** Install `metro-requirex` today! 🎉
+This project is licensed under the **MIT License**. See the [LICENSE.md](LICENSE.md) file for more details.
