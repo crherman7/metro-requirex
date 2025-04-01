@@ -45,7 +45,7 @@ function createMetroRequireModuleIdFactory({
   const internalUsedIds = new Set<number>();
   const fileToIdMap: Record<string, number> = {};
 
-  return ({path: modulePath}: {path: string}): number => {
+  return (modulePath: string): number => {
     if (isExternalDependency(modulePath)) {
       const externalPath = getExternalModuleRelativePath(modulePath);
       if (!(externalPath in fileToIdMap)) {
