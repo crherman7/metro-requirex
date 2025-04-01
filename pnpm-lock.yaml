@@ -68,6 +68,9 @@ importers:
 
   packages/metro-config:
     dependencies:
+      find-up:
+        specifier: ^5.0.0
+        version: 5.0.0
       metro:
         specifier: '>=0.72.0'
         version: 0.82.0

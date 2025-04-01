@@ -1,5 +1,7 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import SparkMD5 from 'spark-md5';
+import findUp from 'find-up';
 
 /**
  * Wraps a Metro configuration object with a custom createModuleIdFactory
@@ -42,9 +44,17 @@ function createMetroRequireModuleIdFactory({
 }: {
   projectRoots: string[];
 }) {
+  // Cache used IDs to ensure uniqueness
   const internalUsedIds = new Set<number>();
+  // Cache module paths to IDs for performance
   const fileToIdMap: Record<string, number> = {};
 
+  /**
+   * Generates a numeric ID for a given module path
+   *
+   * @param modulePath - The absolute path to the module
+   * @returns A deterministic numeric ID for the module
+   */
   return (modulePath: string): number => {
     if (isExternalDependency(modulePath)) {
       const externalPath = getExternalModuleRelativePath(modulePath);
@@ -79,9 +89,14 @@ function isExternalDependency(modulePath: string): boolean {
  * Extracts the full relative path inside node_modules
  * e.g. lodash/cloneDeep or @babel/runtime/helpers/interopRequireDefault
  *
+ * This function normalizes paths for external dependencies by:
+ * 1. Finding the package.json for the module
+ * 2. Checking if the module is the main entry point
+ * 3. Returning the package name for main entry points or the subpath for nested modules
+ *
  * @param modulePath - Absolute path to the module
- * @returns Relative path inside node_modules
- * @throws Error if node_modules is not found in the path
+ * @returns Normalized relative path inside node_modules
+ * @throws Error if node_modules is not found in the path or package.json cannot be located
  */
 function getExternalModuleRelativePath(modulePath: string): string {
   const nodeModulesIndex = modulePath.lastIndexOf('node_modules');
@@ -89,12 +104,50 @@ function getExternalModuleRelativePath(modulePath: string): string {
     throw new Error(`Module is not inside node_modules: ${modulePath}`);
   }
 
-  const afterNodeModules = modulePath.slice(
-    nodeModulesIndex + 'node_modules'.length + 1,
-  );
+  // Find the nearest package.json
+  const packageJsonPath = findUp.sync('package.json', {
+    cwd: path.dirname(modulePath),
+  });
 
-  const withoutExtension = afterNodeModules.replace(/\.(cjs|mjs|[jt]sx?)$/, '');
-  return withoutExtension.replace(/\\/g, '/'); // Normalize for Windows
+  if (!packageJsonPath) {
+    throw new Error(`No package.json found for module: ${modulePath}`);
+  }
+
+  try {
+    // Parse package.json to determine if this is a main entry point
+    const packageDir = path.dirname(packageJsonPath);
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+
+    // Get the resolved paths for main and react-native entry points
+    const mainPath = packageJson.main
+      ? path.resolve(packageDir, packageJson.main)
+      : path.resolve(packageDir, 'index.js');
+
+    const rnPath = packageJson['react-native']
+      ? path.resolve(packageDir, packageJson['react-native'])
+      : null;
+
+    // Helper function to normalize paths for comparison
+    const normalizePath = (p: string) => p.replace(/\.[^/.]+$/, '');
+
+    // If the modulePath matches either entry point, return the package name
+    if (
+      normalizePath(path.resolve(modulePath)) === normalizePath(mainPath) ||
+      (rnPath &&
+        normalizePath(path.resolve(modulePath)) === normalizePath(rnPath))
+    ) {
+      return packageJson.name;
+    }
+
+    // Otherwise, return the subpackage path
+    const relativePath = path.relative(packageDir, modulePath);
+    return `${packageJson.name}/${relativePath.replace(/\\/g, '/').replace(/\.[^/.]+$/, '')}`;
+  } catch (error) {
+    // Add more context to file reading/parsing errors
+    throw new Error(
+      `Failed to process package.json for ${modulePath}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 }
 
 /**
@@ -116,6 +169,7 @@ function getPathRelativeToRoot(
       }
     }
   }
+  // If no project root matched, return the normalized full path
   return fullPath.replace(/\\/g, '/');
 }
 
@@ -133,13 +187,21 @@ function hashToNumericId(input: string): number {
 /**
  * Generates a unique numeric ID based on a string input
  *
+ * This function ensures there are no collisions by incrementing the ID
+ * if the originally calculated hash is already in use.
+ *
  * @param input - String to hash
  * @param usedIds - Set of already used IDs to avoid collisions
  * @returns Unique numeric ID derived from the input
  */
 function hashToUniqueNumericId(input: string, usedIds: Set<number>): number {
   let id = hashToNumericId(input);
-  while (usedIds.has(id)) id++;
+
+  // Increment ID if there's a collision
+  while (usedIds.has(id)) {
+    id++;
+  }
+
   usedIds.add(id);
   return id;
 }
