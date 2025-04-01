@@ -1,5 +1,11 @@
 # @metro-requirex/metro-config
 
+## 0.1.3
+
+### Patch Changes
+
+- b93c2ab: metro path normalization
+
 ## 0.1.2
 
 ### Patch Changes
