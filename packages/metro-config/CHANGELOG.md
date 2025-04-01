@@ -1,5 +1,11 @@
 # @metro-requirex/metro-config
 
+## 0.1.2
+
+### Patch Changes
+
+- 84c8fca: rebuild binary
+
 ## 0.1.1
 
 ### Patch Changes
