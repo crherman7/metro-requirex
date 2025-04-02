@@ -177,14 +177,6 @@ console.log(result); // Output: "Dynamic Execution!"
 
 3. **Return Value**: The function returns `module.exports` from the executed code, mimicking the CommonJS module system.
 
-## **Testing**
-
-To ensure everything works as expected, you can run the tests:
-
-```sh
-yarn test
-```
-
 ## **Contributing**
 
 We welcome contributions to `metro-requirex`! If you’d like to contribute, please follow the steps below:
