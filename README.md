@@ -52,14 +52,31 @@
 Install `metro-requirex` via npm or yarn:
 
 ```sh
-yarn add metro-requirex
+yarn add @metro-requirex/react-native
+yarn add -D @metro-requirex/metro-config
 ```
 
 or
 
 ```sh
-npm install metro-requirex
+npm install @metro-requirex/react-native
+npm install @metro-requirex/metro-config --save-dev
 ```
+
+## **Configuration**
+
+To ensure that `metro-requirex` works correctly with your React Native project, you need to update your **metro.config.js** file. This step integrates the necessary configuration provided by `@metro-requirex/metro-config`.
+
+Update your **metro.config.js** as follows:
+
+```js
+const {getDefaultConfig} = require('@react-native/metro-config');
+const {withMetroRequirexConfig} = require('@metro-requirex/metro-config');
+
+module.exports = withMetroRequirexConfig(getDefaultConfig(__dirname));
+```
+
+If you already have a custom Metro configuration, you can merge it with the configuration returned by `withMetroRequirexConfig(...)`. This updated configuration ensures the proper resolution of module IDs and supports dynamic module loading at runtime.
 
 ## **Usage**
 
