@@ -1,5 +1,11 @@
 # @metro-requirex/metro-config
 
+## 0.2.1
+
+### Patch Changes
+
+- aafe80c: section eager imports
+
 ## 0.2.0
 
 ### Minor Changes
