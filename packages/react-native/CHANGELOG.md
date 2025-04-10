@@ -1,5 +1,11 @@
 # @metro-requirex/react-native
 
+## 0.2.2
+
+### Patch Changes
+
+- fe95d16: remove retain lines
+
 ## 0.2.1
 
 ### Patch Changes
