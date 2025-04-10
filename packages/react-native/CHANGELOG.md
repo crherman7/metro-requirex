@@ -1,5 +1,11 @@
 # @metro-requirex/react-native
 
+## 0.2.0
+
+### Minor Changes
+
+- 8cefa54: add eager imports
+
 ## 0.1.3
 
 ### Patch Changes
