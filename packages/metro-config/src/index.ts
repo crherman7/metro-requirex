@@ -114,7 +114,7 @@ export async function withJS({
 
   traverse(ast, visitors);
 
-  const {code} = generate(ast, {retainLines: true});
+  const {code} = generate(ast);
 
   if (code !== originalCode) {
     fs.writeFileSync(resolvedPath, code, 'utf-8');
@@ -136,13 +136,14 @@ export function withMetroRequirexConfig(
   {eager = false}: MetroRequirexConfig,
 ) {
   if (eager) {
+    const START_MARKER = '@metro-requirex start';
+    const END_MARKER = '@metro-requirex end';
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pkgJSON = require(path.resolve(process.cwd(), 'package.json'));
     const dependencies = [
       ...Object.keys(pkgJSON.dependencies ?? {}),
       'react/jsx-runtime',
     ];
-    const injected = new Set<string>();
     const filePath = path.resolve(
       path.dirname(
         require.resolve('react-native', {
@@ -159,21 +160,31 @@ export function withMetroRequirexConfig(
       visitors: {
         Program: {
           enter(path) {
-            for (const node of path.node.body) {
-              if (
-                t.isExpressionStatement(node) &&
-                t.isCallExpression(node.expression) &&
-                t.isIdentifier(node.expression.callee, {name: 'require'}) &&
-                t.isStringLiteral(node.expression.arguments[0])
-              ) {
-                injected.add(node.expression.arguments[0].value);
-              }
+            const body = path.node.body;
+
+            // --- 1. Remove previously injected section ---
+            const startIndex = body.findIndex(node =>
+              node.leadingComments?.some(
+                comment => comment.value.trim() === START_MARKER,
+              ),
+            );
+
+            const endIndex = body.findIndex(node =>
+              node.leadingComments?.some(
+                comment => comment.value.trim() === END_MARKER,
+              ),
+            );
+
+            if (
+              startIndex !== -1 &&
+              endIndex !== -1 &&
+              endIndex >= startIndex
+            ) {
+              body.splice(startIndex, endIndex - startIndex + 1);
             }
 
-            const toInject = dependencies.filter(dep => !injected.has(dep));
-            if (toInject.length === 0) return;
-
-            const requires = toInject.map(dep =>
+            // --- 2. Re-inject fresh requires from package.json ---
+            const requireNodes = dependencies.map(dep =>
               t.expressionStatement(
                 t.callExpression(t.identifier('require'), [
                   t.stringLiteral(dep),
@@ -181,7 +192,19 @@ export function withMetroRequirexConfig(
               ),
             );
 
-            path.node.body.push(...requires);
+            // Add comment markers
+            const startComment = t.emptyStatement();
+            startComment.leadingComments = [
+              {type: 'CommentLine', value: ` ${START_MARKER}`},
+            ];
+
+            const endComment = t.emptyStatement();
+            endComment.leadingComments = [
+              {type: 'CommentLine', value: ` ${END_MARKER}`},
+            ];
+
+            // Push to end of file
+            body.push(startComment, ...requireNodes, endComment);
           },
         },
       },
