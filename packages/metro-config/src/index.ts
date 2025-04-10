@@ -2,6 +2,124 @@ import fs from 'node:fs';
 import path from 'node:path';
 import SparkMD5 from 'spark-md5';
 import findUp from 'find-up';
+import * as t from '@babel/types';
+import traverse, {TraverseOptions} from '@babel/traverse';
+import generate from '@babel/generator';
+import * as parser from '@babel/parser';
+
+/**
+ * Configuration options for `@metro-requirex/metro-config`.
+ *
+ * @remarks
+ * This config allows you to control behavior for how `metro-requirex` modifies
+ * the React Native runtime, including dependency injection at bundle startup.
+ */
+export type MetroRequirexConfig = {
+  /**
+   * Whether to eagerly `require()` all top-level `dependencies` from your
+   * project's `package.json` into the `InitializeCore.js` entry file.
+   *
+   * @remarks
+   * This ensures that all runtime dependencies are resolved and executed as
+   * early as possible — before your app entry point.
+   *
+   * This is useful if:
+   * - You want to preload side-effect-only modules that might otherwise be
+   *   tree-shaken by Metro.
+   * - You're working with global shims, runtime setups, or polyfills that
+   *   need to be initialized early.
+   * - You want to ensure a more consistent startup environment across devices
+   *   and reloads.
+   *
+   * If enabled, `@metro-requirex/metro-config` will automatically locate
+   * `InitializeCore.js`, parse it via Babel, and inject `require(...)` calls
+   * for each dependency not already included.
+   *
+   * Safe to run repeatedly — injected modules will not be duplicated.
+   *
+   * @defaultValue false
+   *
+   * @example
+   * ```ts
+   * export const config: MetroRequirexConfig = {
+   *   eager: true
+   * };
+   * ```
+   */
+  eager?: boolean;
+};
+
+/**
+ * Parses a JavaScript file into an abstract syntax tree (AST), applies
+ * a Babel `traverse` visitor pattern to it, and writes the transformed
+ * code back to disk if changes are detected.
+ *
+ * @remarks
+ * This function is designed to be used for safe, programmatic AST
+ * manipulation — useful in build pipelines, bundler config hooks,
+ * or code-mod tools.
+ *
+ * The function resolves the provided file path (absolute or package-resolved),
+ * loads the file content, and parses it using Babel’s parser with support
+ * for ES modules and JSX.
+ *
+ * It then applies the provided `visitors` to the AST via Babel Traverse.
+ * If the transformed code differs from the original, the file is overwritten.
+ *
+ * @param filePath - The path to the JavaScript file to process. Can be
+ * either an absolute path or a path resolvable via `require.resolve`.
+ *
+ * @param visitors - A Babel `TraverseOptions` object representing a visitor
+ * pattern to walk and optionally modify the AST.
+ *
+ * @throws Will throw an error if the resolved file path does not exist.
+ *
+ * @example
+ * ```ts
+ * await withJS({
+ *   filePath: 'react-native/Libraries/Core/InitializeCore.js',
+ *   visitors: {
+ *     Program: {
+ *       enter(path) {
+ *         // inject a require('some-package') at the top
+ *       }
+ *     }
+ *   }
+ * });
+ * ```
+ *
+ * @see {@link https://babeljs.io/docs/en/babel-traverse}
+ */
+export async function withJS({
+  filePath,
+  visitors,
+}: {
+  filePath: string;
+  visitors: TraverseOptions;
+}) {
+  const resolvedPath = path.isAbsolute(filePath)
+    ? filePath
+    : require.resolve(filePath);
+
+  if (!fs.existsSync(resolvedPath)) {
+    throw new Error(`File not found: ${resolvedPath}`);
+  }
+
+  const originalCode = fs.readFileSync(resolvedPath, 'utf-8');
+
+  const ast = parser.parse(originalCode, {
+    sourceType: 'module',
+    plugins: ['jsx'],
+  });
+
+  traverse(ast, visitors);
+
+  const {code} = generate(ast, {retainLines: true});
+
+  if (code !== originalCode) {
+    fs.writeFileSync(resolvedPath, code, 'utf-8');
+  }
+}
 
 /**
  * Wraps a Metro configuration object with a custom createModuleIdFactory
@@ -10,10 +128,66 @@ import findUp from 'find-up';
  * @param baseConfig - Existing Metro config
  * @returns Modified Metro config with custom createModuleIdFactory
  */
-export function withMetroRequirexConfig(baseConfig: {
-  serializer?: {createModuleIdFactory?: () => (path: string) => number};
-  projectRoots?: string[];
-}) {
+export function withMetroRequirexConfig(
+  baseConfig: {
+    serializer?: {createModuleIdFactory?: () => (path: string) => number};
+    projectRoots?: string[];
+  },
+  {eager = false}: MetroRequirexConfig,
+) {
+  if (eager) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pkgJSON = require(path.resolve(process.cwd(), 'package.json'));
+    const dependencies = [
+      ...Object.keys(pkgJSON.dependencies ?? {}),
+      'react/jsx-runtime',
+    ];
+    const injected = new Set<string>();
+    const filePath = path.resolve(
+      path.dirname(
+        require.resolve('react-native', {
+          paths: [process.cwd()],
+        }),
+      ),
+      'Libraries',
+      'Core',
+      'InitializeCore.js',
+    );
+
+    withJS({
+      filePath,
+      visitors: {
+        Program: {
+          enter(path) {
+            for (const node of path.node.body) {
+              if (
+                t.isExpressionStatement(node) &&
+                t.isCallExpression(node.expression) &&
+                t.isIdentifier(node.expression.callee, {name: 'require'}) &&
+                t.isStringLiteral(node.expression.arguments[0])
+              ) {
+                injected.add(node.expression.arguments[0].value);
+              }
+            }
+
+            const toInject = dependencies.filter(dep => !injected.has(dep));
+            if (toInject.length === 0) return;
+
+            const requires = toInject.map(dep =>
+              t.expressionStatement(
+                t.callExpression(t.identifier('require'), [
+                  t.stringLiteral(dep),
+                ]),
+              ),
+            );
+
+            path.node.body.push(...requires);
+          },
+        },
+      },
+    });
+  }
+
   return {
     ...baseConfig,
     serializer: {
